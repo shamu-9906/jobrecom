@@ -21,9 +21,9 @@ function JobList({ jobs }) {
           </button>
         </div>
       ) : (
-        <ul className="job-list">
+        <ul>
           {jobs.map((job, index) => (
-            <li key={index} className="job-card">
+            <li key={index}>
               <h3>{job.title}</h3>
               <p><strong>Company:</strong> {job.company}</p>
               <p><strong>Location:</strong> {job.location}</p>
