@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
 import { API_URL } from "./api";
-import JobCard from "./components/JobCard";
 import JobList from "./components/JobList"; // if you use JobList here
 
 function App() {
