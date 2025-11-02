@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import JobCard from "./components/JobCard";
+import JobCard from "./JobCard";
 import "./JobList.css";
 
 function JobList({ jobs }) {
