@@ -1,82 +1,91 @@
-/* Full-page centering */
 .signup-container {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #c2e9fb, #a1c4fd);
+  background: linear-gradient(135deg, #5f72be, #9921e8);
   font-family: "Poppins", sans-serif;
 }
 
-/* Card box for form */
 .signup-box {
   background: #fff;
-  padding: 40px 50px;
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  width: 350px;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 380px;
   text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Heading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .signup-box h2 {
   color: #333;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+  margin-bottom: 25px;
 }
 
-/* Inputs */
 .signup-box input {
   width: 100%;
   padding: 12px;
-  margin: 8px 0;
+  margin: 10px 0;
+  border-radius: 10px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
   transition: all 0.3s ease;
+  font-size: 15px;
 }
 
 .signup-box input:focus {
-  border-color: #2563eb;
+  border-color: #9921e8;
+  box-shadow: 0 0 8px rgba(153, 33, 232, 0.4);
   outline: none;
-  box-shadow: 0 0 5px rgba(37, 99, 235, 0.4);
 }
 
-/* Signup button */
 .signup-box button {
   width: 100%;
   padding: 12px;
-  margin-top: 10px;
-  background-color: #2563eb;
-  color: white;
-  font-size: 1rem;
+  background: linear-gradient(135deg, #5f72be, #9921e8);
   border: none;
-  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  margin-top: 10px;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .signup-box button:hover {
-  background-color: #1e40af;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(153, 33, 232, 0.4);
 }
 
-/* Message */
 .signup-message {
   margin-top: 15px;
-  font-weight: 500;
+  font-size: 14px;
   color: #444;
-  font-size: 0.95rem;
 }
 
-/* Responsive */
-@media (max-width: 500px) {
-  .signup-box {
-    width: 85%;
-    padding: 30px 25px;
-  }
+.login-redirect {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
 
-  .signup-box h2 {
-    font-size: 1.5rem;
-  }
+.redirect-link {
+  color: #9921e8;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.redirect-link:hover {
+  color: #5f72be;
 }
