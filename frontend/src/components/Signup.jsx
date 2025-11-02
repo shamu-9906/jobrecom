@@ -6,6 +6,7 @@ import "./Signup.css";
 const Signup = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -15,6 +16,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_URL}/auth/signup`, {
@@ -29,11 +31,13 @@ const Signup = () => {
         setMessage("✅ Signup successful! Redirecting to login...");
         setTimeout(() => navigate("/login"), 2000);
       } else {
-        setMessage(`❌ ${data.message || "Signup failed"}`);
+        setMessage(`❌ ${data.message || "Signup failed. Try again."}`);
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("⚠️ Server error. Please try again.");
+      setMessage("⚠️ Server error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,9 +70,19 @@ const Signup = () => {
             value={formData.password}
             required
           />
-          <button type="submit">Signup</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Signing up..." : "Signup"}
+          </button>
         </form>
+
         {message && <p className="signup-message">{message}</p>}
+
+        <p className="login-redirect">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")} className="redirect-link">
+            Login here
+          </span>
+        </p>
       </div>
     </div>
   );
