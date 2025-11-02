@@ -10,10 +10,9 @@ import { API_URL } from "./api";
 function App() {
   const [jobs, setJobs] = useState([]);
 
-  // Fetch jobs from backend (Atlas-connected server)
   const fetchJobs = async (skills) => {
     try {
-      const response = await fetch(`${API_URL}/jobs/recommend`, {
+      const response = await fetch(`${API_URL}/api/jobs/recommend`, {  // ✅ fixed URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ skills }),
@@ -34,10 +33,10 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/skills" element={<SkillForm onSearch={fetchJobs} />} />
         <Route path="/jobs" element={<JobList jobs={jobs} />} />
+        <Route path="/" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
