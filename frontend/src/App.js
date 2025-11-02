@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { API_URL } from "./api";
-import JobCard from "./components/JobCard";
+import JobList from "./components/JobList"; // ✅ Use JobList instead of JobCard
 
 function App() {
   const [skills, setSkills] = useState("");
@@ -36,6 +36,7 @@ function App() {
   return (
     <div className="App">
       <h1>AI Job Recommendation Portal</h1>
+
       <form onSubmit={handleSearch}>
         <input
           type="text"
@@ -48,11 +49,8 @@ function App() {
 
       {error && <p className="error">{error}</p>}
 
-      <div className="jobs-container">
-        {jobs.map((job, index) => (
-          <JobCard key={index} job={job} />
-        ))}
-      </div>
+      {/* ✅ Use JobList instead of JobCard mapping */}
+      <JobList jobs={jobs} />
     </div>
   );
 }
