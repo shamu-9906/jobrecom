@@ -1,40 +1,43 @@
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import cors from "cors";
 import jobRoutes from "./routes/jobRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
-
 const app = express();
 
-// ✅ CORS setup
+// Middleware
+app.use(express.json());
+
+// ✅ Allow frontend to access backend
 app.use(
   cors({
-    origin: ["https://jobrecom-frontend1.onrender.com"], // your frontend Render URL
+    origin: ["https://jobrecom-frontend1.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
 
-app.use(express.json());
-
-// ✅ MongoDB connection
+// MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ DB Connection Error:", err));
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// ✅ Routes
+// Routes
 app.use("/api/jobs", jobRoutes);
 app.use("/api/auth", authRoutes);
 
-// ✅ Health check route (for debugging)
+// Default route
 app.get("/", (req, res) => {
-  res.send("Backend is running successfully 🚀");
+  res.send("Job Recommendation Backend is running...");
 });
 
-// ✅ Start server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
