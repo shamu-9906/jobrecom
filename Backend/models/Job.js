@@ -5,7 +5,8 @@ const jobSchema = new mongoose.Schema({
   company: String,
   location: String,
   description: String,
-  skillsRequired: [String],
+  skillsRequired: [String], // ✅ This field name matches your query
 });
 
-export default mongoose.model("Job", jobSchema);
+const Job = mongoose.model("Job", jobSchema);
+export default Job;
