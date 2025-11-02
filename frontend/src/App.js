@@ -1,57 +1,45 @@
 import React, { useState } from "react";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import SkillForm from "./components/SkillForm.jsx";
+import JobList from "./components/JobList.jsx";
+import Signup from "./components/Signup.jsx";
+import Login from "./components/Login.jsx";
+import Navbar from "./components/Navbar.jsx";
 import { API_URL } from "./api";
-import JobList from "./components/JobList"; // if you use JobList here
 
 function App() {
-  const [skills, setSkills] = useState("");
   const [jobs, setJobs] = useState([]);
-  const [error, setError] = useState("");
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setError("");
-    setJobs([]);
-
+  // Fetch jobs from backend (Atlas-connected server)
+  const fetchJobs = async (skills) => {
     try {
-      const response = await fetch(`${API_URL}/api/jobs/recommend`, {
+      const response = await fetch(`${API_URL}/jobs/recommend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skills: skills.split(",").map((s) => s.trim()) }),
+        body: JSON.stringify({ skills }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setJobs(data);
-      } else {
-        setError(data.message || "No jobs found.");
+      if (!response.ok) {
+        throw new Error("Failed to fetch job recommendations");
       }
-    } catch (err) {
-      console.error(err);
-      setError("Server error. Try again later.");
+
+      const data = await response.json();
+      setJobs(data);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
     }
   };
 
   return (
-    <div className="App">
-      <h1>AI Job Recommendation Portal</h1>
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          placeholder="Enter skills (e.g. React, Node.js)"
-          value={skills}
-          onChange={(e) => setSkills(e.target.value)}
-        />
-        <button type="submit">Find Jobs</button>
-      </form>
-
-      {error && <p className="error">{error}</p>}
-
-      <div className="jobs-container">
-        {jobs.length > 0 && <JobList jobs={jobs} />}
-      </div>
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/skills" element={<SkillForm onSearch={fetchJobs} />} />
+        <Route path="/jobs" element={<JobList jobs={jobs} />} />
+      </Routes>
+    </Router>
   );
 }
 
