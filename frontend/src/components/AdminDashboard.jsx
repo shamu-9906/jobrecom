@@ -5,81 +5,99 @@ import "./AdminDashboard.css";
 export default function AdminDashboard() {
   const [applications, setApplications] = useState([]);
 
-  const fetchApplications = async () => {
-    try {
-      const res = await axios.get("https://jobrecom-backend.onrender.com/api/applications");
-      setApplications(res.data);
-    } catch (err) {
-      console.error("Error fetching applications:", err);
-    }
-  };
-
-  const updateStatus = async (id, status) => {
-    try {
-      await axios.put(`https://jobrecom-backend.onrender.com/api/applications/${id}/status`, { status });
-      alert(`Application ${status}`);
-      fetchApplications();
-    } catch (err) {
-      console.error("Error updating status:", err);
-    }
-  };
-
   useEffect(() => {
     fetchApplications();
   }, []);
 
+  const fetchApplications = async () => {
+    try {
+      const res = await axios.get("https://jobrecom-backend.onrender.com/api/applications");
+      setApplications(res.data);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    }
+  };
+
+  const handleDecision = async (id, status) => {
+    try {
+      await axios.put(`https://jobrecom-backend.onrender.com/api/applications/${id}`, { status });
+      alert(`Application ${status} successfully!`);
+      fetchApplications();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAdmin");
+    window.location.href = "/admin-login";
+  };
+
   return (
     <div className="admin-dashboard">
-      <h2>📋 Admin Dashboard — Applications</h2>
+      {/* ✅ Header */}
+      <header className="admin-header">
+        <h2>Admin Dashboard</h2>
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      </header>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Applicant</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Job Title</th>
-            <th>Resume</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {applications.length === 0 ? (
-            <tr>
-              <td colSpan="7">No applications found</td>
-            </tr>
-          ) : (
-            applications.map((app) => (
-              <tr key={app._id}>
-                <td>{app.name}</td>
-                <td>{app.email}</td>
-                <td>{app.phone}</td>
-                <td>{app.jobId?.title || "N/A"}</td>
-                <td>
-                  <a
-                    href={`https://jobrecom-backend.onrender.com${app.resumeUrl}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View Resume
-                  </a>
-                </td>
-                <td>{app.status}</td>
-                <td>
-                  <button onClick={() => updateStatus(app._id, "Accepted")} className="accept">
-                    ✅ Accept
-                  </button>
-                  <button onClick={() => updateStatus(app._id, "Rejected")} className="reject">
-                    ❌ Reject
-                  </button>
-                </td>
+      {/* ✅ Applications Table */}
+      <div className="applications-container">
+        <h3>Job Applications</h3>
+        {applications.length === 0 ? (
+          <p className="no-applications">No applications found.</p>
+        ) : (
+          <table className="applications-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Resume</th>
+                <th>Job Title</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {applications.map((app) => (
+                <tr key={app._id}>
+                  <td>{app.name}</td>
+                  <td>{app.email}</td>
+                  <td>{app.phone}</td>
+                  <td>
+                    <a
+                      href={`https://jobrecom-backend.onrender.com/uploads/${app.resume}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View Resume
+                    </a>
+                  </td>
+                  <td>{app.jobTitle || "N/A"}</td>
+                  <td className={`status ${app.status}`}>{app.status}</td>
+                  <td>
+                    <button
+                      className="approve-btn"
+                      onClick={() => handleDecision(app._id, "approved")}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      className="reject-btn"
+                      onClick={() => handleDecision(app._id, "rejected")}
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
