@@ -2,22 +2,27 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import jobRoutes from "./routes/jobRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import applicationRoutes from "./routes/applicationRoutes.js"; // ✅ Added
+import applicationRoutes from "./routes/applicationRoutes.js";
 
 dotenv.config();
 const app = express();
 
-// ✅ Middleware
-app.use(express.json());
-app.use("/uploads", express.static("uploads")); // ✅ To serve uploaded resumes
+// Setup for ES modules path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// ✅ CORS setup for frontend
+// Middleware
+app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // serve uploaded files
+
 app.use(
   cors({
     origin: ["https://jobrecom-frontend1.onrender.com"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   })
 );
@@ -34,13 +39,12 @@ mongoose
 // ✅ Routes
 app.use("/api/jobs", jobRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/applications", applicationRoutes); // ✅ Added route for applications
+app.use("/api/applications", applicationRoutes);
 
-// ✅ Default route
+// Default route
 app.get("/", (req, res) => {
   res.send("🚀 Job Recommendation Backend is running...");
 });
 
-// ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
