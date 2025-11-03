@@ -14,7 +14,7 @@ export default function AdminLogin() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // ✅ Simple hardcoded admin check (replace later with backend auth)
+    // ✅ Simple hardcoded admin check (replace with backend auth later)
     if (
       credentials.email === "admin@jobportal.com" &&
       credentials.password === "admin123"
@@ -22,32 +22,34 @@ export default function AdminLogin() {
       localStorage.setItem("isAdmin", "true");
       navigate("/admin");
     } else {
-      alert("Invalid Admin Credentials!");
+      alert("❌ Invalid Admin Credentials!");
     }
   };
 
   return (
     <div className="admin-login-container">
-      <h2>Admin Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Admin Email"
-          value={credentials.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={credentials.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
+      <div className="admin-login-box">
+        <h2>Admin Login</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Admin Email"
+            value={credentials.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={credentials.password}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+      </div>
     </div>
   );
 }
