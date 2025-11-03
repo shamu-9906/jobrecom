@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route ,Navigate} from "react-router-dom";
 import SkillForm from "./components/SkillForm.jsx";
 import JobList from "./components/JobList.jsx";
 import Signup from "./components/Signup.jsx";
