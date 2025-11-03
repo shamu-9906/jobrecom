@@ -1,30 +1,18 @@
 import express from "express";
-import Application from "../models/Application.js";
-
 const router = express.Router();
 
-// ✅ Fetch all applications
-router.get("/applications", async (req, res) => {
-  try {
-    const applications = await Application.find().populate("jobId");
-    res.json(applications);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
-});
+// 🧠 Static admin credentials (change these as needed)
+const ADMIN_EMAIL = "admin@retailsync.com";
+const ADMIN_PASSWORD = "admin123";
 
-// ✅ Update application status
-router.put("/applications/:id", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const updatedApp = await Application.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
-    res.json(updatedApp);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+// ✅ Admin Login API
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    return res.json({ success: true, message: "Login successful" });
+  } else {
+    return res.status(401).json({ success: false, message: "Invalid credentials" });
   }
 });
 
