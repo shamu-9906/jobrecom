@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import jobRoutes from "./routes/jobRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -31,6 +32,8 @@ mongoose
 // ✅ Routes
 app.use("/api/jobs", jobRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Default route
 app.get("/", (req, res) => {
