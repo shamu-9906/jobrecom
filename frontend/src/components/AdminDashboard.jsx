@@ -1,123 +1,87 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/applications");
-        const data = await res.json();
-        setApplications(data);
-      } catch (err) {
-        console.error("Error fetching applications:", err);
-      }
-    };
     fetchApplications();
   }, []);
 
-  const handleStatus = async (id, status) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/applications/${id}/status`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
+  const fetchApplications = async () => {
+    const res = await axios.get("http://localhost:5000/api/admin/applications");
+    setApplications(res.data);
+  };
 
-      if (res.ok) {
-        alert(`Application ${status}`);
-        setApplications((prev) =>
-          prev.map((app) => (app._id === id ? { ...app, status } : app))
-        );
-      } else {
-        alert("Failed to update status");
-      }
-    } catch (err) {
-      console.error("Error updating status:", err);
-    }
+  const handleAction = async (id, status) => {
+    await axios.put(`http://localhost:5000/api/admin/applications/${id}`, { status });
+    fetchApplications();
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("isAdmin");
-    window.location.href = "/admin-login";
+    // Clear any stored token or session data
+    localStorage.removeItem("token");
+    window.location.href = "/login"; // redirect to login page
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-pink-100 p-8">
-      <div className="bg-gray-900 text-white py-6 px-8 rounded-xl shadow-lg flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Admin Dashboard</h2>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white font-semibold"
-        >
-          Logout
-        </button>
-      </div>
+    <div className="admin-container">
+      {/* ✅ Navigation Bar */}
+      <nav className="admin-navbar">
+        <h1 className="nav-title">RetailSync Admin</h1>
+        <div className="nav-actions">
+          <span className="welcome-text">Welcome, Admin</span>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </nav>
 
-      <div className="mt-8 bg-white rounded-xl shadow-lg p-6 overflow-x-auto">
-        <table className="min-w-full border border-gray-200">
-          <thead className="bg-gray-900 text-white">
-            <tr>
-              <th className="py-3 px-4 text-left">Applicant</th>
-              <th className="py-3 px-4 text-left">Email</th>
-              <th className="py-3 px-4 text-left">Phone</th>
-              <th className="py-3 px-4 text-left">Job</th>
-              <th className="py-3 px-4 text-left">Company</th>
-              <th className="py-3 px-4 text-left">Location</th>
-              <th className="py-3 px-4 text-left">Resume</th>
-              <th className="py-3 px-4 text-left">Status</th>
-              <th className="py-3 px-4 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applications.length > 0 ? (
-              applications.map((app) => (
-                <tr key={app._id} className="border-t hover:bg-gray-50">
-                  <td className="py-3 px-4">{app.name}</td>
-                  <td className="py-3 px-4">{app.email}</td>
-                  <td className="py-3 px-4">{app.phone}</td>
-                  <td className="py-3 px-4">{app.jobId?.jobTitle || "—"}</td>
-                  <td className="py-3 px-4">{app.jobId?.company || "—"}</td>
-                  <td className="py-3 px-4">{app.jobId?.location || "—"}</td>
-                  <td className="py-3 px-4">
-                    <a
-                      href={`http://localhost:5000${app.resumeUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      View Resume
-                    </a>
-                  </td>
-                  <td className="py-3 px-4 font-semibold">{app.status}</td>
-                  <td className="py-3 px-4">
-                    <button
-                      onClick={() => handleStatus(app._id, "Accepted")}
-                      className="bg-green-600 text-white px-3 py-1 rounded mr-2 hover:bg-green-700"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleStatus(app._id, "Rejected")}
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                    >
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="9"
-                  className="text-center py-6 text-gray-500 font-semibold"
+      {/* ✅ Main Content */}
+      <h2 className="admin-heading">Applications Management</h2>
+
+      <div className="card-container">
+        {applications.length === 0 ? (
+          <p className="no-data">No applications found.</p>
+        ) : (
+          applications.map((app) => (
+            <div key={app._id} className="card">
+              <h3 className="app-name">{app.name}</h3>
+              <p><strong>Email:</strong> {app.email}</p>
+
+              {app.jobId && (
+                <>
+                  <p><strong>Job Title:</strong> {app.jobId.title}</p>
+                  <p><strong>Company:</strong> {app.jobId.company}</p>
+                  <p><strong>Location:</strong> {app.jobId.location}</p>
+                </>
+              )}
+
+              <p>
+                <strong>Status:</strong>{" "}
+                <span className={`status ${app.status.toLowerCase()}`}>
+                  {app.status}
+                </span>
+              </p>
+
+              <div className="btn-group">
+                <button
+                  className="btn accept-btn"
+                  onClick={() => handleAction(app._id, "Accepted")}
                 >
-                  No applications found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  Accept
+                </button>
+                <button
+                  className="btn reject-btn"
+                  onClick={() => handleAction(app._id, "Rejected")}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
