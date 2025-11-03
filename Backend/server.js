@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 
 import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ✅ Routes
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ✅ Connect to MongoDB
 mongoose
