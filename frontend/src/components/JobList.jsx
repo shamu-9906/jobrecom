@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ApplicationForm from "./ApplicationForm"; // import the form component
 import "./JobList.css";
 
 function JobList({ jobs }) {
   const navigate = useNavigate();
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const handleRetry = () => {
     navigate("/skills");
@@ -21,16 +23,29 @@ function JobList({ jobs }) {
           </button>
         </div>
       ) : (
-        <ul>
+        <div className="job-grid">
           {jobs.map((job, index) => (
-            <li key={index}>
+            <div key={index} className="job-card">
               <h3>{job.title}</h3>
               <p><strong>Company:</strong> {job.company}</p>
               <p><strong>Location:</strong> {job.location}</p>
               <p><strong>Description:</strong> {job.description}</p>
-            </li>
+              <button
+                className="apply-btn"
+                onClick={() => setSelectedJob(job)}
+              >
+                Apply
+              </button>
+            </div>
           ))}
-        </ul>
+        </div>
+      )}
+
+      {selectedJob && (
+        <ApplicationForm
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+        />
       )}
     </div>
   );
