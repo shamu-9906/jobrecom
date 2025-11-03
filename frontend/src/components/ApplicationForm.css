@@ -1,0 +1,101 @@
+/* Dark semi-transparent background overlay */
+.application-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Center modal box */
+.application-modal form {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px 40px;
+  width: 400px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Title */
+.application-modal h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 22px;
+}
+
+/* Input fields */
+.application-modal input[type="text"],
+.application-modal input[type="email"],
+.application-modal input[type="tel"],
+.application-modal input[type="file"] {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.application-modal input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Buttons */
+.application-modal button {
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.application-modal button[type="submit"] {
+  background: linear-gradient(90deg, #007bff, #00bfff);
+  color: white;
+  font-weight: bold;
+}
+
+.application-modal button[type="submit"]:hover {
+  background: linear-gradient(90deg, #0056b3, #0088cc);
+  transform: scale(1.03);
+}
+
+.application-modal button[type="button"] {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.application-modal button[type="button"]:hover {
+  background: #ccc;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
