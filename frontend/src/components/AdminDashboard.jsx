@@ -1,126 +1,129 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./AdminDashboard.css";
 
-export default function AdminDashboard() {
+const AdminDashboard = () => {
   const [applications, setApplications] = useState([]);
-  const [selectedResume, setSelectedResume] = useState(null);
 
+  // Fetch all job applications
   useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/applications");
+        const data = await res.json();
+        setApplications(data);
+      } catch (err) {
+        console.error("Error fetching applications:", err);
+      }
+    };
     fetchApplications();
   }, []);
 
-  const fetchApplications = async () => {
+  // Update application status
+  const handleStatus = async (id, status) => {
     try {
-      const res = await axios.get("https://jobrecom-backend.onrender.com/api/applications");
-      setApplications(res.data);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
+      const res = await fetch(`http://localhost:5000/api/applications/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      if (res.ok) {
+        alert(`Application ${status}`);
+        setApplications((prev) =>
+          prev.map((app) => (app._id === id ? { ...app, status } : app))
+        );
+      } else {
+        alert("Failed to update status");
+      }
+    } catch (err) {
+      console.error("Error updating status:", err);
     }
   };
 
-  const handleDecision = async (id, status) => {
-    try {
-      await axios.put(`https://jobrecom-backend.onrender.com/api/applications/${id}`, { status });
-      alert(`Application ${status} successfully!`);
-      fetchApplications();
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
-
+  // Logout admin
   const handleLogout = () => {
     localStorage.removeItem("isAdmin");
     window.location.href = "/admin-login";
   };
 
   return (
-    <div className="admin-dashboard">
-      {/* ✅ Header */}
-      <header className="admin-header">
-        <h2>Admin Dashboard</h2>
-        <button className="logout-btn" onClick={handleLogout}>
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-pink-100 p-8">
+      {/* Header */}
+      <div className="bg-gray-900 text-white py-6 px-8 rounded-xl shadow-lg flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Admin Dashboard</h2>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white font-semibold"
+        >
           Logout
         </button>
-      </header>
+      </div>
 
-      {/* ✅ Applications Table */}
-      <div className="applications-container">
-        <h3>Job Applications</h3>
-        {applications.length === 0 ? (
-          <p className="no-applications">No applications found.</p>
-        ) : (
-          <table className="applications-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Resume</th>
-                <th>Job Title</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {applications.map((app) => (
-                <tr key={app._id}>
-                  <td>{app.name}</td>
-                  <td>{app.email}</td>
-                  <td>{app.phone}</td>
-                  <td>
-                    <button
-                      className="view-resume-btn"
-                      onClick={() =>
-                        setSelectedResume(
-                          `https://jobrecom-backend.onrender.com/uploads/${app.resume}`
-                        )
-                      }
+      {/* Table */}
+      <div className="mt-8 bg-white rounded-xl shadow-lg p-6 overflow-x-auto">
+        <table className="min-w-full border border-gray-200">
+          <thead className="bg-gray-900 text-white">
+            <tr>
+              <th className="py-3 px-4 text-left">Email</th>
+              <th className="py-3 px-4 text-left">Phone</th>
+              <th className="py-3 px-4 text-left">Job</th>
+              <th className="py-3 px-4 text-left">Company</th>
+              <th className="py-3 px-4 text-left">Location</th>
+              <th className="py-3 px-4 text-left">Resume</th>
+              <th className="py-3 px-4 text-left">Status</th>
+              <th className="py-3 px-4 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {applications.length > 0 ? (
+              applications.map((app) => (
+                <tr key={app._id} className="border-t hover:bg-gray-50">
+                  <td className="py-3 px-4">{app.email}</td>
+                  <td className="py-3 px-4">{app.phone}</td>
+                  <td className="py-3 px-4">{app.jobTitle}</td>
+                  <td className="py-3 px-4">{app.company}</td>
+                  <td className="py-3 px-4">{app.location}</td>
+                  <td className="py-3 px-4">
+                    <a
+                      href={`http://localhost:5000/uploads/${app.resume}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline hover:text-blue-800"
                     >
                       View Resume
-                    </button>
+                    </a>
                   </td>
-                  <td>{app.jobTitle || "N/A"}</td>
-                  <td className={`status ${app.status}`}>{app.status}</td>
-                  <td>
+                  <td className="py-3 px-4 font-semibold">{app.status}</td>
+                  <td className="py-3 px-4">
                     <button
-                      className="approve-btn"
-                      onClick={() => handleDecision(app._id, "approved")}
+                      onClick={() => handleStatus(app._id, "Approved")}
+                      className="bg-green-600 text-white px-3 py-1 rounded mr-2 hover:bg-green-700"
                     >
                       Approve
                     </button>
                     <button
-                      className="reject-btn"
-                      onClick={() => handleDecision(app._id, "rejected")}
+                      onClick={() => handleStatus(app._id, "Rejected")}
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >
                       Reject
                     </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="8"
+                  className="text-center py-6 text-gray-500 font-semibold"
+                >
+                  No applications found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {/* ✅ Resume Preview Modal */}
-      {selectedResume && (
-        <div className="resume-modal-overlay" onClick={() => setSelectedResume(null)}>
-          <div className="resume-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Resume Preview</h3>
-            <iframe
-              src={selectedResume}
-              title="Resume Preview"
-              width="100%"
-              height="500px"
-              style={{ borderRadius: "8px", border: "1px solid #ccc" }}
-            />
-            <button className="close-modal-btn" onClick={() => setSelectedResume(null)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
-}
+};
+
+export default AdminDashboard;
