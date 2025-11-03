@@ -1,212 +1,152 @@
-.admin-dashboard {
-  font-family: "Poppins", sans-serif;
-  background-color: #f8fafc;
+/* 🌟 General Layout */
+.admin-container {
+  padding: 0;
+  background-color: #f8f9fa;
   min-height: 100vh;
-  color: #1e2535;
+  font-family: "Poppins", sans-serif;
 }
 
-/* ✅ Header Bar (Navbar-like) */
-.admin-header {
+/* 🌟 Navbar */
+.admin-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1e2535;
-  color: #ffffff;
+  background-color: #1e293b;
+  color: white;
   padding: 15px 40px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 0 0 12px 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.admin-header h2 {
-  font-size: 1.6rem;
-  font-weight: 700;
+.nav-title {
+  font-size: 22px;
+  font-weight: 600;
   letter-spacing: 1px;
 }
 
-.admin-header .logout-btn {
-  background-color: #d9534f;
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.welcome-text {
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 6px;
-  color: white;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.admin-header .logout-btn:hover {
+.logout-btn:hover {
   background-color: #c0392b;
-  transform: scale(1.07);
+  transform: scale(1.05);
 }
 
-/* ✅ Applications Table */
-.applications-container {
-  margin: 30px auto;
-  width: 90%;
-  background: #ffffff;
-  padding: 25px;
+/* 🌟 Main Heading */
+.admin-heading {
+  text-align: center;
+  font-size: 26px;
+  margin: 30px 0;
+  color: #2c3e50;
+}
+
+/* 🌟 Card Layout */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 25px;
+  padding: 0 40px 40px;
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 20px 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.applications-container h3 {
-  margin-bottom: 20px;
-  font-size: 1.3rem;
-  color: #1e2535;
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-.applications-table {
-  width: 100%;
-  border-collapse: collapse;
+.app-name {
+  font-size: 20px;
+  color: #34495e;
+  margin-bottom: 10px;
 }
 
-.applications-table th,
-.applications-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+p {
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0;
 }
 
-.applications-table th {
-  background: #1e2535;
-  color: #fff;
-}
-
-.applications-table tr:hover {
-  background: #f1f3f8;
-}
-
-/* ✅ Buttons */
-.approve-btn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 6px 12px;
+/* 🌟 Status Badges */
+.status {
+  font-weight: 600;
+  padding: 3px 8px;
   border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.approve-btn:hover {
-  background-color: #218838;
-}
-
-.reject-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-  margin-left: 8px;
-}
-
-.reject-btn:hover {
-  background-color: #c82333;
-}
-
-/* ✅ Status Styling */
-.status.approved {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.status.rejected {
-  color: #dc3545;
-  font-weight: bold;
 }
 
 .status.pending {
-  color: #f0ad4e;
-  font-weight: bold;
+  background-color: #f1c40f;
+  color: #fff;
 }
 
-/* ✅ Responsive */
-@media screen and (max-width: 768px) {
-  .applications-container {
-    padding: 15px;
-  }
-
-  .applications-table {
-    font-size: 0.9rem;
-  }
-
-  .admin-header {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-}
-/* ✅ View Resume Button */
-.view-resume-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
+.status.accepted {
+  background-color: #2ecc71;
+  color: #fff;
 }
 
-.view-resume-btn:hover {
-  background-color: #0056b3;
+.status.rejected {
+  background-color: #e74c3c;
+  color: #fff;
 }
 
-/* ✅ Resume Modal */
-.resume-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(30, 37, 53, 0.8);
+/* 🌟 Buttons */
+.btn-group {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.resume-modal {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  width: 80%;
-  max-width: 800px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-.resume-modal h3 {
-  margin-bottom: 15px;
-  color: #1e2535;
-}
-
-.close-modal-btn {
-  background-color: #d9534f;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  color: white;
+  justify-content: space-between;
   margin-top: 15px;
+}
+
+.btn {
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
-.close-modal-btn:hover {
-  background-color: #c0392b;
+.accept-btn {
+  background-color: #2ecc71;
 }
 
-/* ✅ Modal animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.reject-btn {
+  background-color: #e74c3c;
 }
 
+.btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+/* 🌟 No data text */
+.no-data {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  grid-column: 1 / -1;
+  padding: 40px 0;
+}
