@@ -29,6 +29,7 @@ const Login = () => {
         // ✅ Save token & user email to localStorage
         localStorage.setItem("token", data.token);
         if (data.user && data.user.email) {
+          
           localStorage.setItem("userEmail", data.user.email);
         }
 
