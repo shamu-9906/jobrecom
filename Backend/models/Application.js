@@ -18,12 +18,14 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resumeUrl: {
+    type: String,
+    default: "",
+  },
   status: {
     type: String,
-    enum: ["Pending", "Approved", "Rejected"],
     default: "Pending",
   },
 }, { timestamps: true });
 
-const Application = mongoose.model("Application", applicationSchema);
-export default Application;
+export default mongoose.model("Application", applicationSchema);
