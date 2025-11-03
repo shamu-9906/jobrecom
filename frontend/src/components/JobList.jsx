@@ -7,22 +7,24 @@ function JobList() {
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showFormForJob, setShowFormForJob] = useState(null); // 👈 Track which job form is open
-  const [formData, setFormData] = useState({ name: "", email: "", resume: "" });
-  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    resumeUrl: "",
+  });
+  const [activeJobId, setActiveJobId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   const userEmail = localStorage.getItem("userEmail");
-  const skills = location.state?.skills || ""; // skills passed from Skills.jsx
+  const skills = location.state?.skills || []; // skills passed from SkillForm
 
-  // ✅ Fetch jobs and user applications
   useEffect(() => {
     const fetchData = async () => {
       try {
         let jobsRes;
-
-        if (skills) {
+        if (skills.length > 0) {
           jobsRes = await axios.post(
             "https://jobrecom-backend.onrender.com/api/jobs/recommend",
             { skills }
@@ -49,31 +51,37 @@ function JobList() {
     fetchData();
   }, [skills, userEmail]);
 
-  // ✅ Handle form field changes
+  const handleApplyClick = (jobId) => {
+    setActiveJobId(jobId === activeJobId ? null : jobId);
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle job application
   const handleSubmit = async (e, jobId) => {
     e.preventDefault();
     try {
-      await axios.post("https://jobrecom-backend.onrender.com/api/applications", {
+      await axios.post("https://jobrecom-backend.onrender.com/api/applications/apply", {
         jobId,
         name: formData.name,
         email: formData.email,
-        resume: formData.resume,
+        phone: formData.phone,
+        resumeUrl: formData.resumeUrl,
       });
-      setMessage("✅ Application submitted successfully!");
-      setShowFormForJob(null);
-      // Optionally refetch applications to update status
+
+      alert("✅ Application submitted successfully!");
+      setFormData({ name: "", email: "", phone: "", resumeUrl: "" });
+      setActiveJobId(null);
+
+      // refresh application list
       const appsRes = await axios.get(
         `https://jobrecom-backend.onrender.com/api/applications/user/${userEmail}`
       );
       setApplications(appsRes.data);
-    } catch (err) {
-      console.error("Error applying:", err);
-      setMessage("❌ Failed to apply. Try again.");
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert("❌ Failed to submit application");
     }
   };
 
@@ -97,9 +105,7 @@ function JobList() {
       ) : (
         <div className="job-grid">
           {jobs.map((job) => {
-            const applied = applications.find(
-              (a) => a.jobId?._id === job._id
-            );
+            const applied = applications.find((a) => a.jobId?._id === job._id);
 
             return (
               <div key={job._id} className="job-card">
@@ -116,17 +122,12 @@ function JobList() {
                   <>
                     <button
                       className="apply-btn"
-                      onClick={() =>
-                        setShowFormForJob(
-                          showFormForJob === job._id ? null : job._id
-                        )
-                      }
+                      onClick={() => handleApplyClick(job._id)}
                     >
-                      {showFormForJob === job._id ? "Cancel" : "Apply"}
+                      {activeJobId === job._id ? "Cancel" : "Apply"}
                     </button>
 
-                    {/* Inline Apply Form */}
-                    {showFormForJob === job._id && (
+                    {activeJobId === job._id && (
                       <form
                         className="inline-apply-form"
                         onSubmit={(e) => handleSubmit(e, job._id)}
@@ -147,13 +148,21 @@ function JobList() {
                           onChange={handleChange}
                           required
                         />
-                        <textarea
-                          name="resume"
-                          placeholder="Paste your resume text here"
-                          value={formData.resume}
+                        <input
+                          type="text"
+                          name="phone"
+                          placeholder="Your Phone"
+                          value={formData.phone}
                           onChange={handleChange}
                           required
-                        ></textarea>
+                        />
+                        <input
+                          type="text"
+                          name="resumeUrl"
+                          placeholder="Resume URL (Google Drive / Link)"
+                          value={formData.resumeUrl}
+                          onChange={handleChange}
+                        />
                         <button type="submit">Submit</button>
                       </form>
                     )}
@@ -164,8 +173,6 @@ function JobList() {
           })}
         </div>
       )}
-
-      {message && <p className="apply-message">{message}</p>}
     </div>
   );
 }
