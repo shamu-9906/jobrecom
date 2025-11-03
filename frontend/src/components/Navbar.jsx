@@ -5,13 +5,20 @@ import "./Navbar.css";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
   const userEmail = localStorage.getItem("userEmail");
+  const isAdmin = localStorage.getItem("isAdmin"); // ✅ check if admin logged in
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
     navigate("/login");
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem("isAdmin");
+    navigate("/admin-login");
   };
 
   return (
@@ -24,15 +31,38 @@ const Navbar = () => {
         className={`navbar-links ${menuOpen ? "active" : ""}`}
         onClick={() => setMenuOpen(false)}
       >
-        {!token ? (
+        {/* ✅ Show links for normal users */}
+        {!token && !isAdmin ? (
           <>
-            <Link to="/signup" className="nav-link">Signup</Link>
-            <Link to="/login" className="nav-link">Login</Link>
+            <Link to="/signup" className="nav-link">
+              Signup
+            </Link>
+            <Link to="/login" className="nav-link">
+              Login
+            </Link>
+            <Link to="/admin-login" className="nav-link">
+              Admin Login
+            </Link>
+          </>
+        ) : isAdmin ? (
+          /* ✅ Admin View */
+          <>
+            <Link to="/admin-dashboard" className="nav-link">
+              Dashboard
+            </Link>
+            <button className="logout-btn" onClick={handleAdminLogout}>
+              Logout
+            </button>
           </>
         ) : (
+          /* ✅ Normal User View */
           <>
-            <Link to="/skills" className="nav-link">Skills</Link>
-            <Link to="/jobs" className="nav-link">Jobs</Link>
+            <Link to="/skills" className="nav-link">
+              Skills
+            </Link>
+            <Link to="/jobs" className="nav-link">
+              Jobs
+            </Link>
             <span className="user-email">{userEmail}</span>
             <button className="logout-btn" onClick={handleLogout}>
               Logout
