@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 const AdminDashboard = () => {
   const [applications, setApplications] = useState([]);
 
-  // Fetch all job applications
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -17,7 +16,6 @@ const AdminDashboard = () => {
     fetchApplications();
   }, []);
 
-  // Update application status
   const handleStatus = async (id, status) => {
     try {
       const res = await fetch(`http://localhost:5000/api/applications/${id}/status`, {
@@ -39,7 +37,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Logout admin
   const handleLogout = () => {
     localStorage.removeItem("isAdmin");
     window.location.href = "/admin-login";
@@ -47,7 +44,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-pink-100 p-8">
-      {/* Header */}
       <div className="bg-gray-900 text-white py-6 px-8 rounded-xl shadow-lg flex justify-between items-center">
         <h2 className="text-2xl font-bold">Admin Dashboard</h2>
         <button
@@ -58,11 +54,11 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Table */}
       <div className="mt-8 bg-white rounded-xl shadow-lg p-6 overflow-x-auto">
         <table className="min-w-full border border-gray-200">
           <thead className="bg-gray-900 text-white">
             <tr>
+              <th className="py-3 px-4 text-left">Applicant</th>
               <th className="py-3 px-4 text-left">Email</th>
               <th className="py-3 px-4 text-left">Phone</th>
               <th className="py-3 px-4 text-left">Job</th>
@@ -77,14 +73,15 @@ const AdminDashboard = () => {
             {applications.length > 0 ? (
               applications.map((app) => (
                 <tr key={app._id} className="border-t hover:bg-gray-50">
+                  <td className="py-3 px-4">{app.name}</td>
                   <td className="py-3 px-4">{app.email}</td>
                   <td className="py-3 px-4">{app.phone}</td>
-                  <td className="py-3 px-4">{app.jobTitle}</td>
-                  <td className="py-3 px-4">{app.company}</td>
-                  <td className="py-3 px-4">{app.location}</td>
+                  <td className="py-3 px-4">{app.jobId?.jobTitle || "—"}</td>
+                  <td className="py-3 px-4">{app.jobId?.company || "—"}</td>
+                  <td className="py-3 px-4">{app.jobId?.location || "—"}</td>
                   <td className="py-3 px-4">
                     <a
-                      href={`http://localhost:5000/uploads/${app.resume}`}
+                      href={`http://localhost:5000${app.resumeUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 underline hover:text-blue-800"
@@ -95,7 +92,7 @@ const AdminDashboard = () => {
                   <td className="py-3 px-4 font-semibold">{app.status}</td>
                   <td className="py-3 px-4">
                     <button
-                      onClick={() => handleStatus(app._id, "Approved")}
+                      onClick={() => handleStatus(app._id, "Accepted")}
                       className="bg-green-600 text-white px-3 py-1 rounded mr-2 hover:bg-green-700"
                     >
                       Approve
@@ -112,7 +109,7 @@ const AdminDashboard = () => {
             ) : (
               <tr>
                 <td
-                  colSpan="8"
+                  colSpan="9"
                   className="text-center py-6 text-gray-500 font-semibold"
                 >
                   No applications found
