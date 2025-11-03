@@ -18,7 +18,7 @@ const AdminDashboard = () => {
   // ✅ Fetch applications
   const fetchApplications = async () => {
     try {
-      const res = await axios.get("https://jobrecom-backend.onrender.com/api/admin/applications");
+      const res = await axios.get("https://jobrecom-backend.onrender.com/api/applications");
       setApplications(res.data);
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -28,7 +28,7 @@ const AdminDashboard = () => {
   // ✅ Handle Accept / Reject
   const handleAction = async (id, status) => {
     try {
-      await axios.put(`https://jobrecom-backend.onrender.com/api/admin/applications/${id}`, { status });
+      await axios.put(`https://jobrecom-backend.onrender.com/api/applications/${id}`, { status });
       fetchApplications(); // refresh list
     } catch (error) {
       console.error("Error updating application status:", error);
