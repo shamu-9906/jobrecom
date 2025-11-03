@@ -6,6 +6,7 @@ import Signup from "./components/Signup.jsx";
 import Login from "./components/Login.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { API_URL } from "./api";
+import AdminDashboard from "./components/AdminDashboard"; 
 
 function App() {
   const [jobs, setJobs] = useState([]);
@@ -37,6 +38,7 @@ function App() {
         <Route path="/jobs" element={<JobList jobs={jobs} />} />
         <Route path="/" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+  <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
