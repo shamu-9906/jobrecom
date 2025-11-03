@@ -6,63 +6,59 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Detect user or admin
   const token = localStorage.getItem("token");
   const userEmail = localStorage.getItem("userEmail");
-  const isAdmin = localStorage.getItem("isAdmin"); // ✅ check if admin logged in
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userEmail");
-    navigate("/login");
-  };
-
-  const handleAdminLogout = () => {
-    localStorage.removeItem("isAdmin");
-    navigate("/admin-login");
+    if (isAdmin) {
+      localStorage.removeItem("isAdmin");
+      window.location.href = "/admin-login";
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userEmail");
+      navigate("/login");
+    }
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <h2 className="navbar-logo">Job Portal</h2>
+        <h2
+          className="navbar-logo"
+          onClick={() => navigate(isAdmin ? "/admin" : "/")}
+        >
+          Job Portal
+        </h2>
       </div>
 
       <div
         className={`navbar-links ${menuOpen ? "active" : ""}`}
         onClick={() => setMenuOpen(false)}
       >
-        {/* ✅ Show links for normal users */}
-        {!token && !isAdmin ? (
+        {/* ✅ Show for Admin */}
+        {isAdmin ? (
           <>
-            <Link to="/signup" className="nav-link">
-              Signup
+            <Link to="/admin" className="nav-link admin-dashboard">
+              Admin Dashboard
             </Link>
-            <Link to="/login" className="nav-link">
-              Login
-            </Link>
-            <Link to="/admin-login" className="nav-link">
-              Admin Login
-            </Link>
-          </>
-        ) : isAdmin ? (
-          /* ✅ Admin View */
-          <>
-            <Link to="/admin-dashboard" className="nav-link">
-              Dashboard
-            </Link>
-            <button className="logout-btn" onClick={handleAdminLogout}>
+            <button
+              className="logout-btn admin-logout"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           </>
-        ) : (
-          /* ✅ Normal User View */
+        ) : !token ? (
           <>
-            <Link to="/skills" className="nav-link">
-              Skills
-            </Link>
-            <Link to="/jobs" className="nav-link">
-              Jobs
-            </Link>
+            <Link to="/signup" className="nav-link">Signup</Link>
+            <Link to="/login" className="nav-link">Login</Link>
+          </>
+        ) : (
+          <>
+            <Link to="/skills" className="nav-link">Skills</Link>
+            <Link to="/jobs" className="nav-link">Jobs</Link>
             <span className="user-email">{userEmail}</span>
             <button className="logout-btn" onClick={handleLogout}>
               Logout
