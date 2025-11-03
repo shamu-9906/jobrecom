@@ -52,9 +52,11 @@ app.get("/", (req, res) => {
   res.send("🚀 Job Recommendation Backend is running...");
 });
 
-// ✅ Fallback route for frontend (useful for SPA on Render)
+// ✅ Serve static frontend (SPA)
 app.use(express.static(path.join(__dirname, "public")));
-app.get("*", (req, res) => {
+
+// ✅ Fallback route (for React/SPA)
+app.use((req, res, next) => {
   res.sendFile(path.resolve(__dirname, "public", "index.html"));
 });
 
