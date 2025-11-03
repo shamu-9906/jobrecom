@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./JobList.css";
 
@@ -8,14 +8,26 @@ function JobList() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const userEmail = localStorage.getItem("userEmail");
+  const skills = location.state?.skills || ""; // 👈 skills passed from Skills.jsx
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // ✅ Fetch all jobs
-        const jobsRes = await axios.get("https://jobrecom-backend.onrender.com/api/jobs");
+        let jobsRes;
+
+        // ✅ Fetch jobs based on skills
+        if (skills) {
+          jobsRes = await axios.post(
+            "https://jobrecom-backend.onrender.com/api/jobs/recommend",
+            { skills }
+          );
+        } else {
+          jobsRes = { data: [] };
+        }
+
         setJobs(jobsRes.data);
 
         // ✅ Fetch user applications
@@ -33,17 +45,17 @@ function JobList() {
     };
 
     fetchData();
-  }, [userEmail]);
+  }, [skills, userEmail]);
 
   const handleApply = (jobId) => {
     navigate(`/apply/${jobId}`);
   };
 
-  if (loading) return <p>Loading jobs...</p>;
-
   const handleRetry = () => {
     navigate("/skills");
   };
+
+  if (loading) return <p>Loading jobs...</p>;
 
   return (
     <div className="job-list-container">
