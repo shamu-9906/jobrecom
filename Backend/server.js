@@ -17,15 +17,21 @@ const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // serve uploaded files
 
+// ✅ Allow CORS for both local dev and Render frontend
 app.use(
   cors({
-    origin: ["https://jobrecom-frontend1.onrender.com"],
+    origin: [
+      "https://jobrecom-frontend1.onrender.com",
+      "http://localhost:5173", // local dev frontend
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   })
 );
+
+// ✅ Serve uploaded files (resumes)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Connect MongoDB
 mongoose
@@ -41,10 +47,17 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
 
-// Default route
+// ✅ Root route
 app.get("/", (req, res) => {
   res.send("🚀 Job Recommendation Backend is running...");
 });
 
+// ✅ Fallback route for frontend (useful for SPA on Render)
+app.use(express.static(path.join(__dirname, "public")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "public", "index.html"));
+});
+
+// ✅ Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
