@@ -54,7 +54,7 @@ app.get("/", (req, res) => {
 
 // ✅ Fallback route for frontend (useful for SPA on Render)
 app.use(express.static(path.join(__dirname, "public")));
-app.get("/*", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "public", "index.html"));
 });
 
