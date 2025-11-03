@@ -122,4 +122,43 @@
   color: white;
 }
 
+.inline-apply-form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f9fafc;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.inline-apply-form input,
+.inline-apply-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.inline-apply-form button {
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.inline-apply-form button:hover {
+  background: #218838;
+}
+
+.apply-message {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+}
 
