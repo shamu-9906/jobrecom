@@ -7,18 +7,21 @@ function JobList() {
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFormForJob, setShowFormForJob] = useState(null); // 👈 Track which job form is open
+  const [formData, setFormData] = useState({ name: "", email: "", resume: "" });
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
   const userEmail = localStorage.getItem("userEmail");
-  const skills = location.state?.skills || ""; // 👈 skills passed from Skills.jsx
+  const skills = location.state?.skills || ""; // skills passed from Skills.jsx
 
+  // ✅ Fetch jobs and user applications
   useEffect(() => {
     const fetchData = async () => {
       try {
         let jobsRes;
 
-        // ✅ Fetch jobs based on skills
         if (skills) {
           jobsRes = await axios.post(
             "https://jobrecom-backend.onrender.com/api/jobs/recommend",
@@ -30,7 +33,6 @@ function JobList() {
 
         setJobs(jobsRes.data);
 
-        // ✅ Fetch user applications
         if (userEmail) {
           const appsRes = await axios.get(
             `https://jobrecom-backend.onrender.com/api/applications/user/${userEmail}`
@@ -47,8 +49,32 @@ function JobList() {
     fetchData();
   }, [skills, userEmail]);
 
-  const handleApply = (jobId) => {
-    navigate(`/apply/${jobId}`);
+  // ✅ Handle form field changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ Handle job application
+  const handleSubmit = async (e, jobId) => {
+    e.preventDefault();
+    try {
+      await axios.post("https://jobrecom-backend.onrender.com/api/applications", {
+        jobId,
+        name: formData.name,
+        email: formData.email,
+        resume: formData.resume,
+      });
+      setMessage("✅ Application submitted successfully!");
+      setShowFormForJob(null);
+      // Optionally refetch applications to update status
+      const appsRes = await axios.get(
+        `https://jobrecom-backend.onrender.com/api/applications/user/${userEmail}`
+      );
+      setApplications(appsRes.data);
+    } catch (err) {
+      console.error("Error applying:", err);
+      setMessage("❌ Failed to apply. Try again.");
+    }
   };
 
   const handleRetry = () => {
@@ -87,18 +113,59 @@ function JobList() {
                     ✅ Applied ({applied.status})
                   </p>
                 ) : (
-                  <button
-                    className="apply-btn"
-                    onClick={() => handleApply(job._id)}
-                  >
-                    Apply
-                  </button>
+                  <>
+                    <button
+                      className="apply-btn"
+                      onClick={() =>
+                        setShowFormForJob(
+                          showFormForJob === job._id ? null : job._id
+                        )
+                      }
+                    >
+                      {showFormForJob === job._id ? "Cancel" : "Apply"}
+                    </button>
+
+                    {/* Inline Apply Form */}
+                    {showFormForJob === job._id && (
+                      <form
+                        className="inline-apply-form"
+                        onSubmit={(e) => handleSubmit(e, job._id)}
+                      >
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Your Name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                        />
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="Your Email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                        />
+                        <textarea
+                          name="resume"
+                          placeholder="Paste your resume text here"
+                          value={formData.resume}
+                          onChange={handleChange}
+                          required
+                        ></textarea>
+                        <button type="submit">Submit</button>
+                      </form>
+                    )}
+                  </>
                 )}
               </div>
             );
           })}
         </div>
       )}
+
+      {message && <p className="apply-message">{message}</p>}
     </div>
   );
 }
