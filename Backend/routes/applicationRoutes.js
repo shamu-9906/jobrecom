@@ -1,17 +1,18 @@
+// routes/applicationRoutes.js
 import express from 'express';
 import multer from 'multer';
 import Application from '../models/Application.js';
 
 const router = express.Router();
 
+// File upload setup
 const storage = multer.diskStorage({
   destination: './uploads/',
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname),
 });
-
 const upload = multer({ storage });
 
-// POST new application
+// ✅ POST new application
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
     const newApp = new Application({
@@ -20,26 +21,34 @@ router.post('/', upload.single('resume'), async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       resumeUrl: `/uploads/${req.file.filename}`,
-      status: "Pending"
+      status: 'Pending',
     });
     await newApp.save();
-    res.status(200).json({ message: "Application submitted successfully!" });
+    res.status(200).json({ message: 'Application submitted successfully!' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET all applications (Admin)
+// ✅ GET all applications (Admin)
 router.get('/', async (req, res) => {
-  const apps = await Application.find().populate('jobId');
-  res.json(apps);
+  try {
+    const apps = await Application.find().populate('jobId');
+    res.json(apps);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// PATCH application status (Admin)
-router.patch('/:id', async (req, res) => {
-  const { status } = req.body;
-  await Application.findByIdAndUpdate(req.params.id, { status });
-  res.json({ message: `Application ${status}` });
+// ✅ PUT to update application status
+router.put('/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body; // "Accepted" or "Rejected"
+    await Application.findByIdAndUpdate(req.params.id, { status });
+    res.json({ message: `Application ${status}` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;
