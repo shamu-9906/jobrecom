@@ -1,49 +1,62 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./AdminLogin.css";
+import { useNavigate } from "react-router-dom";
+import "./Admin.css";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      const res = await axios.post("https://jobrecom-backend.onrender.com/api/admin/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "https://jobrecom-backend.onrender.com/api/admin/login",
+        { email, password }
+      );
+
       if (res.data.success) {
-        localStorage.setItem("admin", "true");
-        window.location.href = "/admin-dashboard";
+        localStorage.setItem("adminLoggedIn", true);
+        navigate("/admin-dashboard");
       }
     } catch (err) {
-      setError("Invalid email or password");
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
     }
   };
 
   return (
-    <div className="admin-login-container">
-      <h1>Admin Login</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-        {error && <p className="error-text">{error}</p>}
-      </form>
+    <div className="admin-container">
+      <div className="admin-box">
+        <h1 className="admin-title">RetailSync Admin Login</h1>
+        <form onSubmit={handleSubmit} className="admin-form">
+          <input
+            type="email"
+            placeholder="Admin Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="admin-input"
+          />
+          <input
+            type="password"
+            placeholder="Admin Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="admin-input"
+          />
+          <button type="submit" className="admin-btn">
+            Login
+          </button>
+          {error && <p className="admin-error">{error}</p>}
+        </form>
+      </div>
     </div>
   );
 };
