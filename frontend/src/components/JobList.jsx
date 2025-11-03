@@ -1,98 +1,94 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./JobList.css";
 
-const JobsList = () => {
+function JobList() {
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user")); // assuming user info saved on login
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Fetch all jobs
+  const userEmail = localStorage.getItem("userEmail");
+
   useEffect(() => {
-    fetchJobs();
-    if (user?.email) fetchUserApplications();
-  }, []);
+    const fetchData = async () => {
+      try {
+        // ✅ Fetch all jobs
+        const jobsRes = await axios.get("https://jobrecom-backend.onrender.com/api/jobs");
+        setJobs(jobsRes.data);
 
-  const fetchJobs = async () => {
-    try {
-      const res = await axios.get("https://jobrecom-backend.onrender.com/api/jobs");
-      setJobs(res.data);
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    }
+        // ✅ Fetch user applications
+        if (userEmail) {
+          const appsRes = await axios.get(
+            `https://jobrecom-backend.onrender.com/api/applications/user/${userEmail}`
+          );
+          setApplications(appsRes.data);
+        }
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userEmail]);
+
+  const handleApply = (jobId) => {
+    navigate(`/apply/${jobId}`);
   };
 
-  const fetchUserApplications = async () => {
-    try {
-      const res = await axios.get(
-        `https://jobrecom-backend.onrender.com/api/applications/user/${user.email}`
-      );
-      setApplications(res.data);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    }
-  };
+  if (loading) return <p>Loading jobs...</p>;
 
-  // Check if user already applied for a job
-  const getApplicationStatus = (jobId) => {
-    const application = applications.find(app => app.jobId?._id === jobId);
-    return application ? application.status : null;
-  };
-
-  const handleApply = async (job) => {
-    const alreadyApplied = getApplicationStatus(job._id);
-    if (alreadyApplied) {
-      alert(`You already applied for this job! (Status: ${alreadyApplied})`);
-      return;
-    }
-
-    const name = user?.name;
-    const email = user?.email;
-    const phone = user?.phone;
-
-    try {
-      const res = await axios.post("https://jobrecom-backend.onrender.com/api/applications/apply", {
-        jobId: job._id,
-        name,
-        email,
-        phone,
-      });
-      alert(res.data.message);
-      fetchUserApplications(); // refresh status
-    } catch (err) {
-      console.error("Error submitting application:", err);
-      alert("Failed to submit application. Please try again.");
-    }
+  const handleRetry = () => {
+    navigate("/skills");
   };
 
   return (
-    <div className="job-list">
+    <div className="job-list-container">
       <h2>Recommended Jobs</h2>
-      <div className="jobs-grid">
-        {jobs.map((job) => {
-          const status = getApplicationStatus(job._id);
-          return (
-            <div className="job-card" key={job._id}>
-              <h3>{job.title}</h3>
-              <p><strong>Company:</strong> {job.company}</p>
-              <p><strong>Location:</strong> {job.location}</p>
-              <p><strong>Description:</strong> {job.description}</p>
 
-              {status ? (
-                <button className={`applied-btn ${status.toLowerCase()}`} disabled>
-                  Applied ({status})
-                </button>
-              ) : (
-                <button className="apply-btn" onClick={() => handleApply(job)}>
-                  Apply
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      {jobs.length === 0 ? (
+        <div className="no-jobs">
+          <p>No jobs found. Try different skills.</p>
+          <button className="retry-btn" onClick={handleRetry}>
+            🔁 Retry
+          </button>
+        </div>
+      ) : (
+        <div className="job-grid">
+          {jobs.map((job) => {
+            const applied = applications.find(
+              (a) => a.jobId?._id === job._id
+            );
+
+            return (
+              <div key={job._id} className="job-card">
+                <h3>{job.title}</h3>
+                <p><strong>Company:</strong> {job.company}</p>
+                <p><strong>Location:</strong> {job.location}</p>
+                <p><strong>Description:</strong> {job.description}</p>
+
+                {applied ? (
+                  <p className={`status ${applied.status.toLowerCase()}`}>
+                    ✅ Applied ({applied.status})
+                  </p>
+                ) : (
+                  <button
+                    className="apply-btn"
+                    onClick={() => handleApply(job._id)}
+                  >
+                    Apply
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
-};
+}
 
-export default JobsList;
+export default JobList;
