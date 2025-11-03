@@ -1,55 +1,89 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./AdminLogin.css";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./AdminDashboard.css";
 
-export default function AdminLogin() {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const navigate = useNavigate();
+export default function AdminDashboard() {
+  const [applications, setApplications] = useState([]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials((prev) => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
+  const fetchApplications = async () => {
+    try {
+      const res = await axios.get("https://jobrecom-backend.onrender.com/api/applications");
+      setApplications(res.data);
+    } catch (err) {
+      console.error("Error fetching applications:", err);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // ✅ Simple hardcoded admin check (replace with backend auth later)
-    if (
-      credentials.email === "admin@jobportal.com" &&
-      credentials.password === "admin123"
-    ) {
-      localStorage.setItem("isAdmin", "true");
-      navigate("/admin");
-    } else {
-      alert("❌ Invalid Admin Credentials!");
+  const updateStatus = async (id, status) => {
+    try {
+      await axios.patch(`https://jobrecom-backend.onrender.com/api/applications/${id}`, { status });
+      alert(`Application ${status}`);
+      fetchApplications(); // refresh list
+    } catch (err) {
+      console.error("Error updating status:", err);
     }
   };
 
   return (
-    <div className="admin-login-container">
-      <div className="admin-login-box">
-        <h2>Admin Login</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Admin Email"
-            value={credentials.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={credentials.password}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit">Login</button>
-        </form>
+    <div className="admin-dashboard">
+      <div className="admin-header">
+        <h2>Admin Dashboard</h2>
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.removeItem("isAdmin");
+            window.location.href = "/admin-login";
+          }}
+        >
+          Logout
+        </button>
       </div>
+
+      <table className="applications-table">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Job</th>
+            <th>Resume</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {applications.map((app) => (
+            <tr key={app._id}>
+              <td>{app.name}</td>
+              <td>{app.email}</td>
+              <td>{app.phone}</td>
+              <td>{app.jobId?.title || "N/A"}</td>
+              <td>
+                <a
+                  href={`https://jobrecom-backend.onrender.com${app.resumeUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Resume
+                </a>
+              </td>
+              <td>{app.status || "Pending"}</td>
+              <td>
+                <button onClick={() => updateStatus(app._id, "Approved")} className="approve-btn">
+                  Approve
+                </button>
+                <button onClick={() => updateStatus(app._id, "Rejected")} className="reject-btn">
+                  Reject
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
