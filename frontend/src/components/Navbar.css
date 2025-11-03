@@ -52,6 +52,17 @@
   transform: scale(1.05);
 }
 
+/* Highlight Admin Dashboard link */
+.nav-link.admin-dashboard {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.nav-link.admin-dashboard:hover {
+  color: #ffdd75;
+  transform: scale(1.08);
+}
+
 /* ============ USER EMAIL ============ */
 .user-email {
   background: #2f3646;
@@ -69,7 +80,7 @@
   background: #3d4456;
 }
 
-/* ============ LOGOUT BUTTON ============ */
+/* ============ LOGOUT BUTTONS ============ */
 .logout-btn {
   background-color: #d9534f;
   border: none;
@@ -84,6 +95,16 @@
 .logout-btn:hover {
   background-color: #c0392b;
   transform: scale(1.07);
+}
+
+/* Admin logout special color */
+.logout-btn.admin-logout {
+  background-color: #ff6f00;
+}
+
+.logout-btn.admin-logout:hover {
+  background-color: #ff8f00;
+  transform: scale(1.08);
 }
 
 /* ============ HAMBURGER MENU ============ */
