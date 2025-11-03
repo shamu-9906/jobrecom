@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 
 // 🧠 Static admin credentials (change these as needed)
-const ADMIN_EMAIL = "admin@retailsync.com";
+const ADMIN_EMAIL = "admin@gmail.com";
 const ADMIN_PASSWORD = "admin123";
 
 // ✅ Admin Login API
