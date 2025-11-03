@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SkillForm.css";
 
-function SkillForm({ onSearch }) {
+function SkillForm() {
   const [skills, setSkills] = useState("");
   const navigate = useNavigate();
 
@@ -10,8 +10,9 @@ function SkillForm({ onSearch }) {
     e.preventDefault();
     if (skills.trim()) {
       const skillList = skills.split(",").map((skill) => skill.trim());
-      onSearch(skillList); // fetch job data
-      navigate("/jobs"); // redirect to jobs page
+      
+      // ✅ Navigate to JobList page with skills as state
+      navigate("/jobs", { state: { skills: skillList } });
     }
   };
 
