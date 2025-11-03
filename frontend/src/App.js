@@ -7,6 +7,12 @@ import Login from "./components/Login.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { API_URL } from "./api";
 import AdminDashboard from "./components/AdminDashboard"; 
+import AdminLogin from "./components/AdminLogin";
+
+function PrivateRoute({ children }) {
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  return isAdmin ? children : <Navigate to="/admin-login" />;
+}
 
 function App() {
   const [jobs, setJobs] = useState([]);
@@ -38,7 +44,16 @@ function App() {
         <Route path="/jobs" element={<JobList jobs={jobs} />} />
         <Route path="/" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-  <Route path="/admin" element={<AdminDashboard />} />
+         {/* 🔐 Admin routes */}
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </Router>
   );
