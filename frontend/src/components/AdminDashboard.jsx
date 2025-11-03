@@ -5,24 +5,40 @@ import "./AdminDashboard.css";
 const AdminDashboard = () => {
   const [applications, setApplications] = useState([]);
 
+  // ✅ Redirect if admin not logged in
   useEffect(() => {
-    fetchApplications();
+    const admin = localStorage.getItem("admin");
+    if (!admin) {
+      window.location.href = "/admin-login";
+    } else {
+      fetchApplications();
+    }
   }, []);
 
+  // ✅ Fetch applications
   const fetchApplications = async () => {
-    const res = await axios.get("http://localhost:5000/api/admin/applications");
-    setApplications(res.data);
+    try {
+      const res = await axios.get("https://jobrecom-backend.onrender.com/api/admin/applications");
+      setApplications(res.data);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    }
   };
 
+  // ✅ Handle Accept / Reject
   const handleAction = async (id, status) => {
-    await axios.put(`http://localhost:5000/api/admin/applications/${id}`, { status });
-    fetchApplications();
+    try {
+      await axios.put(`https://jobrecom-backend.onrender.com/api/admin/applications/${id}`, { status });
+      fetchApplications(); // refresh list
+    } catch (error) {
+      console.error("Error updating application status:", error);
+    }
   };
 
+  // ✅ Handle logout
   const handleLogout = () => {
-    // Clear any stored token or session data
-    localStorage.removeItem("token");
-    window.location.href = "/login"; // redirect to login page
+    localStorage.removeItem("admin");
+    window.location.href = "/admin-login";
   };
 
   return (
@@ -49,10 +65,11 @@ const AdminDashboard = () => {
             <div key={app._id} className="card">
               <h3 className="app-name">{app.name}</h3>
               <p><strong>Email:</strong> {app.email}</p>
+              <p><strong>Phone:</strong> {app.phone || "N/A"}</p>
 
               {app.jobId && (
                 <>
-                  <p><strong>Job Title:</strong> {app.jobId.title}</p>
+                  <p><strong>Applied Job:</strong> {app.jobId.title}</p>
                   <p><strong>Company:</strong> {app.jobId.company}</p>
                   <p><strong>Location:</strong> {app.jobId.location}</p>
                 </>
@@ -70,7 +87,7 @@ const AdminDashboard = () => {
                   className="btn accept-btn"
                   onClick={() => handleAction(app._id, "Accepted")}
                 >
-                  Accept
+                  Approve
                 </button>
                 <button
                   className="btn reject-btn"
