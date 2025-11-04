@@ -33,7 +33,7 @@ const AdminLogin = () => {
   return (
     <div className="admin-container">
       <div className="admin-box">
-        <h1 className="admin-title">RetailSync Admin Login</h1>
+        <h1 className="admin-title">Admin Login</h1>
         <form onSubmit={handleSubmit} className="admin-form">
           <input
             type="email"
