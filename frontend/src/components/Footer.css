@@ -1,0 +1,49 @@
+.footer {
+  background: #1e2535;
+  color: #ffffff;
+  text-align: center;
+  padding: 25px 10px;
+  margin-top: 40px;
+  border-top: 2px solid #00bcd4;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.footer-content {
+  margin-bottom: 8px;
+}
+
+.footer-title {
+  color: #00bcd4;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.footer-content p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.footer-bottom {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 20px;
+  }
+  .footer-title {
+    font-size: 1.2rem;
+  }
+}
